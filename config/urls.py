@@ -25,21 +25,15 @@ import os
 def serve_firebase_sw(request):
     """Serve the Firebase messaging service worker from the project root.
     The service worker MUST be served at root scope for FCM to work."""
-    sw_path = os.path.join(settings.BASE_DIR, 'firebase-messaging-sw.js')
-    return FileResponse(open(sw_path, 'rb'), content_type='application/javascript')
-
 urlpatterns = [
-    path('', HomeView.as_view(), name='home'),
-    path('about/', AboutView.as_view(), name='about'),
-    path('privacy-policy/', PrivacyPolicyView.as_view(), name='privacy_policy'),
-    path('terms-of-service/', TermsOfServiceView.as_view(), name='terms_of_service'),
     path('admin/', admin.site.urls),
+    path('', HomeView.as_view(), name='home'),
     path('accounts/', include('accounts.urls')),
-    path('dashboard/', include('dashboard.urls')),
     path('location/', include('location.urls')),
     path('donations/', include('donations.urls')),
-    path('firebase-messaging-sw.js', serve_firebase_sw, name='firebase_sw'),
+    path('dashboard/', include('dashboard.urls')),
+    path('firebase-messaging-sw.js', firebase_messaging_sw, name='firebase-messaging-sw'),
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

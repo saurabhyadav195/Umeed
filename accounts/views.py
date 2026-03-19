@@ -214,28 +214,40 @@ def mark_notification_read(request, pk):
 @login_required
 @csrf_exempt
 def save_fcm_token(request):
-
     if request.method == "POST":
-
         try:
             data = json.loads(request.body)
-        except (json.JSONDecodeError, ValueError):
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
+            token = data.get("token")
 
-        token = data.get("token")
+            if not token:
+                return JsonResponse({"error": "Token is required"}, status=400)
 
-        if not token:
-            return JsonResponse({"error": "Token is required"}, status=400)
+            # Clear this token from any other accounts (useful for testing multiple accounts on the same browser)
+            request.user.__class__.objects.filter(fcm_token=token).exclude(id=request.user.id).update(fcm_token=None)
 
-        # Clear this token from any other accounts (useful for testing multiple accounts on the same browser)
-        request.user.__class__.objects.filter(fcm_token=token).exclude(id=request.user.id).update(fcm_token=None)
+            request.user.fcm_token = token
+            request.user.save(update_fields=['fcm_token'])
 
-        request.user.fcm_token = token
-        request.user.save(update_fields=['fcm_token'])
+            return JsonResponse({"status": "token saved"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+    return JsonResponse({"error": "Invalid method"}, status=405)
 
-        return JsonResponse({"status": "token saved"})
-
-    return JsonResponse({"error": "Method not allowed"}, status=405)
+def firebase_messaging_sw(request):
+    """
+    Serves the Firebase Service Worker dynamically so we can hide the API key
+    in environment variables.
+    """
+    context = {
+        'FIREBASE_API_KEY': os.environ.get('FIREBASE_API_KEY', 'AIzaSyDCXxsEE72vdnhr1ek6MVFZwFXDi2CQiHY'),
+        'FIREBASE_AUTH_DOMAIN': os.environ.get('FIREBASE_AUTH_DOMAIN', 'umeed-f2657.firebaseapp.com'),
+        'FIREBASE_PROJECT_ID': os.environ.get('FIREBASE_PROJECT_ID', 'umeed-f2657'),
+        'FIREBASE_STORAGE_BUCKET': os.environ.get('FIREBASE_STORAGE_BUCKET', 'umeed-f2657.firebasestorage.app'),
+        'FIREBASE_MESSAGING_SENDER_ID': os.environ.get('FIREBASE_MESSAGING_SENDER_ID', '90024521377'),
+        'FIREBASE_APP_ID': os.environ.get('FIREBASE_APP_ID', '1:90024521377:web:b80c6454516a038c2a4ae0'),
+        'FIREBASE_MEASUREMENT_ID': os.environ.get('FIREBASE_MEASUREMENT_ID', 'G-4TZ9R70JWK'),
+    }
+    return render(request, 'firebase-messaging-sw.js', context, content_type="application/javascript")
 
 
 def test_push(request):
