@@ -12,12 +12,21 @@ def initialize_firebase():
         firebase_json = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON')
         
         if firebase_json:
-            # Parse the JSON string
-            service_account_info = json.loads(firebase_json)
-            cred = credentials.Certificate(service_account_info)
+            try:
+                # Parse the JSON string
+                service_account_info = json.loads(firebase_json)
+                cred = credentials.Certificate(service_account_info)
+            except json.JSONDecodeError as e:
+                print(f"Error parsing FIREBASE_SERVICE_ACCOUNT_JSON: {e}")
+                # Fallback or exit gracefully
+                return
         else:
             # Fallback to local file (Development)
-            cred = credentials.Certificate(str(settings.FIREBASE_SERVICE_ACCOUNT_PATH))
+            if os.path.exists(settings.FIREBASE_SERVICE_ACCOUNT_PATH):
+                cred = credentials.Certificate(str(settings.FIREBASE_SERVICE_ACCOUNT_PATH))
+            else:
+                print("Firebase credentials not found (JSON string or file).")
+                return
             
         firebase_admin.initialize_app(cred)
 

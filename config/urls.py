@@ -18,13 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from accounts.views import HomeView, AboutView, PrivacyPolicyView, TermsOfServiceView
-from django.http import FileResponse
-import os
+from accounts.views import HomeView, AboutView, PrivacyPolicyView, TermsOfServiceView, firebase_messaging_sw
 
-def serve_firebase_sw(request):
-    """Serve the Firebase messaging service worker from the project root.
-    The service worker MUST be served at root scope for FCM to work."""
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', HomeView.as_view(), name='home'),
