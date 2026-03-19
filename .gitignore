@@ -18,3 +18,7 @@ firebase-service-account.json
 .vscode/
 .idea/
 .DS_Store
+
+
+#database
+umeed_backup.sql
