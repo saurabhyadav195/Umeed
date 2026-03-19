@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8 col-xl-7">
+        
+        <div class="mb-4">
+            <a href="{% url 'restaurant_donations' %}" class="text-decoration-none text-muted fw-medium mb-3 d-inline-block">← Back to Donations</a>
+            <h2 class="fw-bold mb-1">Post New Donation</h2>
+            <p class="text-muted">List your surplus food to help NGOs feed the community.</p>
+        </div>
+
+        <div class="glass-card shadow-lg border-0 position-relative overflow-hidden mb-5 p-4 p-md-5">
+            <div class="position-absolute top-0 start-0 w-100 bg-success" style="height: 5px;"></div>
+            
+            <form method="post" id="donationForm">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger rounded-3 py-2 text-sm border-0 mb-4">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="row g-4">
+                    {% for field in form %}
+                    <div class="col-12 {% if field.name == 'food_name' or field.name == 'quantity' %}col-md-6{% endif %}">
+                        <label class="form-label text-muted small fw-semibold text-uppercase tracking-wider" for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small mt-1">{{ field.errors }}</div>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <div class="form-text small opacity-75 mt-1">{{ field.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="col-12 mt-5">
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary-custom btn-lg rounded-pill fw-bold flex-grow-1">
+                                Post Donation <span class="ms-2">→</span>
+                            </button>
+                            <a href="{% url 'restaurant_donations' %}" class="btn btn-secondary-custom btn-lg rounded-pill fw-bold px-4">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Add bootstrap classes to all generated inputs
+        const inputs = document.querySelectorAll('#donationForm input, #donationForm select, #donationForm textarea');
+        inputs.forEach(input => {
+            if(input.type !== 'checkbox' && input.type !== 'radio') {
+                input.classList.add('form-control', 'form-control-custom');
+            }
+        });
+    });
+</script>
+{% endblock %}

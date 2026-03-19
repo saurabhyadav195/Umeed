@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-5 pt-3">
+    <div class="col-md-6 col-lg-5">
+        <div class="glass-card shadow-lg border-0 overflow-hidden position-relative">
+            <!-- Decorative accent -->
+            <div class="position-absolute top-0 start-0 w-100 bg-success" style="height: 6px;"></div>
+            
+            <div class="text-center mb-4 mt-2">
+                <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-3 shadow-sm" style="width: 60px; height: 60px;">
+                    <span class="fs-3">🔑</span>
+                </div>
+                <h2 class="fw-bold mb-1">Welcome Back</h2>
+                <p class="text-muted">Sign in to your Umeed account</p>
+            </div>
+
+            <form method="post" class="px-2">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger rounded-3 py-2 text-sm border-0">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-semibold text-uppercase tracking-wider">Email Address</label>
+                    <input type="email" name="username" class="form-control form-control-custom form-control-lg" placeholder="name@organization.com" required>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label class="form-label text-muted small fw-semibold text-uppercase tracking-wider mb-0">Password</label>
+                        <a href="{% url 'password_reset' %}" class="text-success small text-decoration-none fw-medium">Forgot password?</a>
+                    </div>
+                    <input type="password" name="password" class="form-control form-control-custom form-control-lg mt-2" placeholder="••••••••" required>
+                </div>
+
+                <div class="d-grid mt-5">
+                    <button type="submit" class="btn btn-primary-custom btn-lg rounded-pill fw-bold pointer-event">Sign In <span class="ms-2">→</span></button>
+                </div>
+            </form>
+            
+            <div class="text-center mt-4 pt-3 border-top border-light">
+                <p class="text-muted small mb-0">
+                    Don't have an account? <a href="/accounts/signup/" class="text-success fw-bold text-decoration-none ms-1">Create one</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-6 col-md-8">
+        
+        <div class="mb-4">
+            <a href="{% url 'profile_settings' %}#documents" class="text-decoration-none text-muted fw-medium mb-3 d-inline-block">← Back to Settings</a>
+            <h2 class="fw-bold mb-1">Upload Document</h2>
+            <p class="text-muted">Upload verification documents to validate your organization's credibility.</p>
+        </div>
+
+        <div class="glass-card shadow-sm border-0 p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="d-inline-flex bg-primary bg-opacity-10 text-primary rounded-circle p-3 mb-3">
+                    <span class="fs-2">📄</span>
+                </div>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" id="uploadForm">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger rounded-3 py-2 text-sm border-0 mb-4">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="row g-4">
+                    {% for field in form %}
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-semibold text-uppercase tracking-wider" for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small mt-1">{{ field.errors }}</div>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <div class="form-text small opacity-75 mt-1">{{ field.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="col-12 mt-5 text-center">
+                        <button type="submit" class="btn btn-primary-custom btn-lg rounded-pill fw-bold w-100">
+                            Upload Document <span class="ms-2">↑</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputs = document.querySelectorAll('#uploadForm input, #uploadForm select');
+        inputs.forEach(input => {
+            if(input.type === 'file') {
+                input.classList.add('form-control');
+            } else {
+                input.classList.add('form-select', 'form-control-custom');
+            }
+        });
+    });
+</script>
+{% endblock %}

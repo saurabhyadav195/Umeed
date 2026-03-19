@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umeed - Food Recovery & Donation</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <!-- Premium Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center"
+                href="{% if user.is_authenticated %}{% if user.role == 'restaurant' %}{% url 'restaurant_dashboard' %}{% else %}{% url 'ngo_dashboard' %}{% endif %}{% else %}{% url 'home' %}{% endif %}">
+                <img src="{% static 'images/logo.png' %}" alt="Umeed Logo" height="70" class="me-2"
+                    onerror="this.src=''; this.alt='🌱';">
+                <span class="fs-3 fw-bold text-success">Umeed</span>
+            </a>
+            <button class="navbar-toggler shadow-none border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarUmeed">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarUmeed">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3"
+                            href="{% if user.role == 'restaurant' %}{% url 'restaurant_dashboard' %}{% else %}{% url 'ngo_dashboard' %}{% endif %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3" href="{% url 'about' %}">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3 position-relative" href="/accounts/notifications/">
+                            Notifications
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle notification-badge d-none">
+                                <span class="visually-hidden">New alerts</span>
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown ms-lg-3 mt-3 mt-lg-0">
+                        <a class="nav-link dropdown-toggle btn-secondary-custom px-4 py-2 rounded-pill" href="#"
+                            id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            👤
+                            {% if user.organization_name %}
+                            {{ user.organization_name }}
+                            {% else %}
+                            {{ user.email }}
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 rounded-4"
+                            aria-labelledby="navbarDropdown">
+                            <li>
+                                <h6 class="dropdown-header">Signed in as <br><strong>{{ user.get_role_display|default:user.role|title }}</strong></h6>
+                            </li>
+                            <li><a class="dropdown-item fw-medium py-2" href="{% url 'profile_settings' %}">⚙️ Profile
+                                    Settings</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}" class="px-2">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger fw-semibold rounded-3 py-2">
+                                        Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3" href="{% url 'about' %}">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold px-3" href="/accounts/login/">Login</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+                        <a class="btn btn-primary-custom rounded-pill px-4" href="/accounts/signup/">Register</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="content-wrapper">
+
+        {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}{% else %}info{% endif %} alert-dismissible fade show shadow-sm border-0 rounded-4"
+                role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="container mt-4 mb-5 pb-5">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging-compat.js"></script>
+
+        <script>
+            console.log("Checking Service Worker...");
+            if ('serviceWorker' in navigator) {
+
+                window.addEventListener('load', function () {
+
+                    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                        .then(function (registration) {
+
+                            console.log("Service Worker Registered:", registration);
+
+                        }).catch(function (error) {
+
+                            console.error("Service Worker registration failed:", error);
+
+                        });
+                });
+
+            } else {
+
+                console.log("Service Worker not supported");
+
+            }
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyDCXxsEE72vdnhr1ek6MVFZwFXDi2CQiHY",
+                authDomain: "umeed-f2657.firebaseapp.com",
+                projectId: "umeed-f2657",
+                storageBucket: "umeed-f2657.firebasestorage.app",
+                messagingSenderId: "90024521377",
+                appId: "1:90024521377:web:b80c6454516a038c2a4ae0",
+                measurementId: "G-4TZ9R70JWK"
+            };
+
+            firebase.initializeApp(firebaseConfig);
+
+            const messaging = firebase.messaging();
+
+            {% if user.is_authenticated %}
+            Notification.requestPermission().then(permission => {
+
+                if (permission === "granted") {
+                    console.log("Notification permission granted. Fetching FCM token...");
+
+                    messaging.getToken({ vapidKey: "BEMeA_mSNPGcFXOps3DA9n01sARu-bjgpMgdFAPqfGPoVLB3z_xYCkdUjx6hfVW4WJ2ryYWsL6uqGVBsDFcwxug" })
+                        .then((token) => {
+
+                            if (token) {
+                                console.log("FCM Token:", token);
+
+                                fetch("/accounts/save-fcm-token/", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        "X-CSRFToken": "{{ csrf_token }}"
+                                    },
+                                    body: JSON.stringify({ token: token })
+                                }).then(res => {
+                                    if (res.ok) console.log("FCM token saved successfully.");
+                                    else console.error("Failed to save FCM token:", res.status);
+                                });
+
+                            } else {
+                                console.warn("No FCM token received. Check VAPID key or service worker registration.");
+                            }
+
+                        }).catch((err) => {
+                            console.error("Error fetching FCM token:", err);
+                        });
+
+                } else {
+                    console.warn("Notification permission denied.");
+                }
+
+            });
+
+            messaging.onMessage((payload) => {
+
+                if (payload.notification) {
+                    new Notification(payload.notification.title, {
+                        body: payload.notification.body
+                    });
+                }
+
+            });
+            {% endif %}
+
+        </script>
+    </main> <!-- end content-wrapper -->
+
+    <!-- Premium Footer -->
+    <footer class="premium-footer mt-auto pt-5">
+        <div class="container">
+            <div class="row gy-4 border-bottom border-secondary pb-4 mb-4">
+                <div class="col-lg-5 col-md-6 pe-lg-5">
+                    <a class="text-decoration-none d-flex align-items-center mb-3"
+                        href="{% if user.is_authenticated %}{% if user.role == 'restaurant' %}{% url 'restaurant_dashboard' %}{% else %}{% url 'ngo_dashboard' %}{% endif %}{% else %}{% url 'home' %}{% endif %}">
+                        <img src="{% static 'images/logo.png' %}" alt="Umeed Logo" height="80"
+                            class="bg-white rounded-4 p-1 shadow-sm" onerror="this.src=''; this.alt='🌱 Umeed';">
+                    </a>
+                    <p class="text-muted mb-4 pe-lg-4">Connecting surplus food with those in need. Empowering
+                        communities, reducing waste, and fighting hunger together.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-muted hover-success fs-5 text-decoration-none">🌐</a>
+                        <a href="#" class="text-muted hover-success fs-5 text-decoration-none">📱</a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h6 class="text-white mb-3 text-uppercase fw-semibold tracking-wider" style="font-size: 0.85rem;">
+                        Platform</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><a
+                                href="{% if user.is_authenticated %}{% if user.role == 'restaurant' %}{% url 'restaurant_dashboard' %}{% else %}{% url 'ngo_dashboard' %}{% endif %}{% else %}{% url 'home' %}{% endif %}"
+                                class="text-decoration-none text-muted">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'about' %}" class="text-decoration-none text-muted">About
+                                Us</a></li>
+                        <li class="mb-2"><a href="/accounts/signup/"
+                                class="text-decoration-none text-muted">Register</a></li>
+                        <li class="mb-2"><a href="/accounts/login/" class="text-decoration-none text-muted">Login</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-3 col-6">
+                    <h6 class="text-white mb-3 text-uppercase fw-semibold tracking-wider" style="font-size: 0.85rem;">
+                        Legal</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><a href="{% url 'privacy_policy' %}"
+                                class="text-decoration-none text-muted">Privacy Policy</a></li>
+                        <li class="mb-2"><a href="{% url 'terms_of_service' %}"
+                                class="text-decoration-none text-muted">Terms of Service</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-12">
+                    <h6 class="text-white mb-3 text-uppercase fw-semibold tracking-wider" style="font-size: 0.85rem;">
+                        Contact Us</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2 text-muted d-flex align-items-center"><span class="me-2 fs-6">📍</span> Mumbai,
+                            India</li>
+                        <li class="mb-2 text-muted d-flex align-items-center"><span class="me-2 fs-6">📧</span> <a
+                                href="mailto:umeeddonation@gmail.com">umeeddonation@gmail.com</a></li>
+                        <li class="mb-2 text-muted d-flex align-items-center"><span class="me-2 fs-6">📞</span> +91 8655
+                            647416</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row align-items-center pb-4">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 text-muted small">&copy; 2026 Umeed Food Recovery Platform. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                    <p class="mb-0 text-muted small">Designed with <span class="text-danger">♥</span> to stop food
+                        waste.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

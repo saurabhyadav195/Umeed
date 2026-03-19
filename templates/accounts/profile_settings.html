@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-12 mb-4">
+        <h2 class="fw-bold">My Account Settings</h2>
+        <p class="text-muted">Manage your profile, operational locations, and verification documents.</p>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="col-md-4 col-lg-3 mb-4">
+        <div class="list-group list-group-flush glass-card p-2 rounded-4 border-0">
+            <a href="#profile" class="list-group-item list-group-item-action bg-transparent border-0 fw-semibold active rounded-3 mb-1 py-3" data-bs-toggle="pill">
+                <span class="fs-5 me-2">👤</span> Profile Overview
+            </a>
+            <a href="#locations" class="list-group-item list-group-item-action bg-transparent border-0 fw-semibold rounded-3 mb-1 py-3" data-bs-toggle="pill">
+                <span class="fs-5 me-2">📍</span> Locations
+            </a>
+            <a href="#documents" class="list-group-item list-group-item-action bg-transparent border-0 fw-semibold rounded-3 py-3" data-bs-toggle="pill">
+                <span class="fs-5 me-2">📄</span> Verification Docs
+            </a>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="col-md-8 col-lg-9">
+        <div class="tab-content">
+            
+            <!-- Profile Tab -->
+            <div class="tab-pane fade show active" id="profile">
+                <div class="glass-card mb-4 border-0 p-lg-5">
+                    <h4 class="fw-bold mb-4 border-bottom pb-3">Profile Overview</h4>
+                    <div class="row g-4 mb-4">
+                        <div class="col-sm-6">
+                            <p class="text-muted small text-uppercase tracking-wider mb-1">Organization Name</p>
+                            <h5 class="mb-0 fw-semibold">{{ user.organization_name }}</h5>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="text-muted small text-uppercase tracking-wider mb-1">Role</p>
+                            <span class="badge badge-accepted fs-6 px-3 py-2 rounded-pill shadow-sm">{{ user.get_role_display|default:user.role|title }}</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="text-muted small text-uppercase tracking-wider mb-1">Contact Person</p>
+                            <h5 class="mb-0 fw-semibold">{{ user.contact_person }}</h5>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="text-muted small text-uppercase tracking-wider mb-1">Email / Phone</p>
+                            <h5 class="mb-0 fw-semibold">{{ user.email }}<br><small class="text-muted">{{ user.phone }}</small></h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Locations Tab -->
+            <div class="tab-pane fade" id="locations">
+                <div class="glass-card mb-4 border-0 p-lg-5">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-3 gap-3">
+                        <h4 class="fw-bold mb-0">Operational Locations</h4>
+                        <a href="{% url 'add_address' %}" class="btn btn-primary-custom btn-sm rounded-pill px-4 py-2">
+                            + Add New Location
+                        </a>
+                    </div>
+                    
+                    {% if addresses %}
+                        <div class="row g-4">
+                            {% for address in addresses %}
+                            <div class="col-md-6">
+                                <div class="card border border-light shadow-sm rounded-4 h-100 p-4 transition-all hover-shadow">
+                                    <h6 class="fw-bold mb-2">{{ address.street }}</h6>
+                                    <p class="text-muted small mb-4">
+                                        {{ address.city }}, {{ address.state }} - {{ address.pincode }}<br>
+                                        <span class="font-monospace text-black-50">Lat: {{ address.latitude }} | Lng: {{ address.longitude }}</span>
+                                    </p>
+                                    <div class="mt-auto d-flex gap-2">
+                                        <a href="{% url 'edit_address' address.id %}" class="btn btn-outline-secondary btn-sm flex-fill rounded-pill fw-medium">Edit</a>
+                                        <a href="{% url 'delete_address' address.id %}" class="btn btn-outline-danger btn-sm flex-fill rounded-pill fw-medium" onclick="return confirm('Are you sure you want to delete this location?');">Delete</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5 bg-light rounded-4 border">
+                            <span class="fs-1 d-block mb-3">📭</span>
+                            <p class="text-muted mb-0 fw-medium">No locations added yet. You must add a location to start participating.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Documents Tab -->
+            <div class="tab-pane fade" id="documents">
+                <div class="glass-card mb-4 border-0 p-lg-5">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-3 gap-3">
+                        <h4 class="fw-bold mb-0">Verification Documents</h4>
+                        <a href="{% url 'upload_document' %}" class="btn btn-secondary-custom btn-sm rounded-pill px-4 py-2">
+                            ↑ Upload Document
+                        </a>
+                    </div>
+
+                    {% if documents %}
+                        <div class="table-responsive rounded-3 border">
+                            <table class="table table-borderless align-middle table-hover mb-0">
+                                <thead class="table-light text-muted small text-uppercase tracking-wider border-bottom">
+                                    <tr>
+                                        <th class="ps-4">Document Type</th>
+                                        <th>Uploaded</th>
+                                        <th>Status</th>
+                                        <th class="text-end pe-4">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for doc in documents %}
+                                        <tr class="border-bottom">
+                                            <td class="fw-semibold ps-4">{{ doc.get_document_type_display }}</td>
+                                            <td class="text-muted small">{{ doc.uploaded_at|date:"M d, Y" }}</td>
+                                            <td>
+                                                {% if doc.approved %}
+                                                    <span class="badge badge-available">Approved</span>
+                                                {% elif doc.rejected %}
+                                                    <span class="badge badge-expired">Rejected</span>
+                                                {% else %}
+                                                    <span class="badge badge-requested">Pending</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <a href="{{ doc.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary-custom rounded-pill px-3 fw-medium">View</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5 bg-light rounded-4 border">
+                            <span class="fs-1 d-block mb-3">📄</span>
+                            <p class="text-muted mb-0 fw-medium">No verification documents uploaded. Please upload your documents to get verified.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom styling for Bootstrap tabs */
+.list-group-item.active {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+}
+.hover-shadow:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-2px);
+    transition: all 0.2s;
+}
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let hash = window.location.hash;
+        if (hash) {
+            let tab = document.querySelector('a[href="' + hash + '"]');
+            if (tab) {
+                let tabInstance = new bootstrap.Tab(tab);
+                tabInstance.show();
+            }
+        }
+
+        let tabEls = document.querySelectorAll('a[data-bs-toggle="pill"]');
+        tabEls.forEach(function(tabEl) {
+            tabEl.addEventListener('shown.bs.tab', function(event) {
+                if (history.pushState) {
+                    history.pushState(null, null, event.target.getAttribute('href'));
+                } else {
+                    window.location.hash = event.target.getAttribute('href');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

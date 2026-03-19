@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="glass-card mb-5 p-5 text-center position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(13, 148, 136, 0.1) 100%); border: 1px solid rgba(16, 185, 129, 0.2);">
+    <!-- Decorative blobs -->
+    <div class="position-absolute rounded-circle bg-success opacity-10" style="width: 300px; height: 300px; top: -100px; left: -100px; filter: blur(50px);"></div>
+    <div class="position-absolute rounded-circle bg-info opacity-10" style="width: 200px; height: 200px; bottom: -50px; right: -50px; filter: blur(40px);"></div>
+    
+    <div class="position-relative z-1 py-4">
+        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill mb-3 fw-semibold">
+            Fighting Hunger & Reducing Waste
+        </span>
+        <h1 class="display-4 fw-black mb-4 tracking-tight" style="font-weight: 800; color: #0f172a;">
+            Let Umeed <span class="text-success">Lighten the Load.</span>
+        </h1>
+        <p class="lead text-muted mb-5 mx-auto" style="max-width: 600px;">
+            We connect food donors with local NGOs to fight hunger and reduce waste. Our platform makes it seamless to donate or receive food while helping the environment.
+        </p>
+        
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+            <a href="/accounts/signup/" class="btn btn-primary-custom btn-lg px-5 py-3 rounded-pill d-flex align-items-center justify-content-center">
+                Join the Platform
+                <span class="ms-2">→</span>
+            </a>
+            <a href="/accounts/login/" class="btn btn-secondary-custom btn-lg px-5 py-3 rounded-pill">
+                Sign In
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- How it Works -->
+<div class="mb-5 pt-4">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold mb-3">How Umeed Works</h2>
+        <p class="text-muted">A simple, transparent process to ensure surplus food reaches those who need it most.</p>
+    </div>
+    
+    <div class="row g-4 relative">
+        <div class="col-md-4">
+            <div class="glass-card h-100 text-center p-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-4" style="width: 64px; height: 64px;">
+                    <span class="fs-2">🏢</span>
+                </div>
+                <h4 class="fw-bold mb-3">1. Offer a Donation</h4>
+                <p class="text-muted mb-0">Restaurants and food businesses list their surplus food, specifying quantity and expiry.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="glass-card h-100 text-center p-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info rounded-circle mb-4" style="width: 64px; height: 64px;">
+                    <span class="fs-2">🤝</span>
+                </div>
+                <h4 class="fw-bold mb-3">2. NGOs Request</h4>
+                <p class="text-muted mb-0">Verified NGOs view nearby available food on a map and send a request to claim it.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="glass-card h-100 text-center p-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning rounded-circle mb-4" style="width: 64px; height: 64px;">
+                    <span class="fs-2">🚚</span>
+                </div>
+                <h4 class="fw-bold mb-3">3. Coordinated Pickup</h4>
+                <p class="text-muted mb-0">Once accepted, both parties communicate to coordinate a swift pickup before the food expires.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Impact Section -->
+<div class="glass-card mb-5 bg-dark text-white border-0 position-relative overflow-hidden" style="background-color: #0f172a !important;">
+    <div class="position-absolute end-0 top-0 opacity-10" style="font-size: 20rem; transform: translate(20%, -20%); pointer-events: none;">🌱</div>
+    <div class="row align-items-center position-relative z-1">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <h2 class="fw-bold mb-3">Flexible solutions at scale</h2>
+            <p class="text-muted mb-4 text-white-50">Annually, millions of pounds of food is wasted while communities go hungry. Umeed bridges this gap by empowering small donors and large receivers to collaborate seamlessly. All for free.</p>
+            <ul class="list-unstyled mb-0">
+                <li class="d-flex align-items-center mb-2"><span class="text-success me-2">✓</span> Zero cost for donors & NGOs</li>
+                <li class="d-flex align-items-center mb-2"><span class="text-success me-2">✓</span> Real-time notifications</li>
+                <li class="d-flex align-items-center"><span class="text-success me-2">✓</span> Secure document verification</li>
+            </ul>
+        </div>
+        <div class="col-lg-6">
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="bg-white bg-opacity-10 rounded-4 p-4 text-center shadow-lg border border-white border-opacity-10">
+                        <h2 class="display-5 fw-bold text-success mb-1">{{ active_ngos }}</h2>
+                        <span class="text-white-50 font-monospace small">Active NGOs</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="bg-white bg-opacity-10 rounded-4 p-4 text-center shadow-lg border border-white border-opacity-10">
+                        <h2 class="display-5 fw-bold text-success mb-1">{{ active_restaurants }}</h2>
+                        <span class="text-white-50 font-monospace small">Restaurants</span>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="bg-white bg-opacity-10 rounded-4 p-4 text-center shadow-lg border border-white border-opacity-10">
+                        <h2 class="display-5 fw-bold text-success mb-1">{{ meals_recovered }}<span class="fs-4 text-white-50 ms-1">+</span></h2>
+                        <span class="text-white-50 font-monospace small text-uppercase tracking-wider">Estimated Meals Provided</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

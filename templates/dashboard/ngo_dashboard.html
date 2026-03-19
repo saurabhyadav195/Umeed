@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold mb-1">Welcome back, {{ user.organization_name }} 👋</h2>
+        <p class="text-muted mb-0">Ready to secure surplus food for your community today?</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <a href="{% url 'ngo_nearby' %}" class="btn btn-primary-custom rounded-pill px-4 shadow-sm fw-bold border border-success">
+            🔍 Find Food Nearby
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mt-2 mb-4">
+    <!-- Active Impact Banner -->
+    <div class="col-12 mb-2">
+        <div class="glass-card text-white border-0 p-4 p-md-5 d-flex align-items-center justify-content-between rounded-4 shadow-sm position-relative overflow-hidden" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <div class="position-absolute end-0 top-0 opacity-10" style="font-size: 10rem; transform: translate(10%, -20%); pointer-events: none;">🍲</div>
+            <div class="position-relative z-1">
+                <h3 class="fw-bold mb-2 text-white">Make an Impact Today</h3>
+                <p class="mb-0 text-white opacity-75 lead" style="max-width: 600px;">Local restaurants have listed new surplus food. Check nearby donations and claim them before they expire.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <h4 class="fw-bold mb-1 mt-4">Quick Actions</h4>
+    <div class="col-md-4 mt-3">
+        <a href="{% url 'ngo_nearby' %}" class="text-decoration-none">
+            <div class="glass-card p-4 h-100 text-center hover-shadow border-0 transition-all bg-white">
+                <div class="d-inline-flex bg-primary bg-opacity-10 text-primary rounded-circle p-3 mb-3">
+                    <span class="fs-2">🗺️</span>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Nearby Donations</h5>
+                <p class="text-muted small mb-0">Find and request available food within your operational radius.</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4 mt-3">
+        <a href="{% url 'ngo_requests' %}" class="text-decoration-none">
+            <div class="glass-card p-4 h-100 text-center hover-shadow border-0 transition-all bg-white">
+                <div class="d-inline-flex bg-warning bg-opacity-10 text-warning rounded-circle p-3 mb-3">
+                    <span class="fs-2">⏳</span>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Track Requests</h5>
+                <p class="text-muted small mb-0">Check the status of your active food claims and coordinate pickups.</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4 mt-3">
+        <a href="{% url 'profile_settings' %}" class="text-decoration-none">
+            <div class="glass-card p-4 h-100 text-center hover-shadow border-0 transition-all bg-white">
+                <div class="d-inline-flex bg-info bg-opacity-10 text-info rounded-circle p-3 mb-3">
+                    <span class="fs-2">⚙️</span>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Account Settings</h5>
+                <p class="text-muted small mb-0">Update your base locations and check your verification status.</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<style>
+.hover-shadow:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-4px);
+}
+</style>
+{% endblock %}

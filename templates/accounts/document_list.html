@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Verification Documents</h2>
+
+<a href="{% url 'upload_document' %}" class="btn btn-success mb-3">
+    Upload Document
+</a>
+
+<table class="table table-bordered">
+<tr>
+    <th>Type</th>
+    <th>Status</th>
+</tr>
+
+{% for doc in documents %}
+<tr>
+    <td>{{ doc.get_document_type_display }}</td>
+    <td>
+        {% if doc.approved %}
+            <span class="badge bg-success">Approved</span>
+        {% elif doc.rejected %}
+            <span class="badge bg-danger">Rejected</span>
+        {% else %}
+            <span class="badge bg-warning">Pending</span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

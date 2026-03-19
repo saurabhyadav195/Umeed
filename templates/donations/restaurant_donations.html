@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold mb-1">My Donations</h2>
+        <p class="text-muted mb-0">Track and manage your listed surplus food.</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <a href="{% url 'create_donation' %}" class="btn btn-primary-custom rounded-pill px-4 shadow-sm fw-bold">
+            + Add Donation
+        </a>
+    </div>
+</div>
+
+<div class="glass-card border-0 p-0 overflow-hidden shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-borderless table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4 py-3 text-muted text-uppercase tracking-wider small fw-semibold">Food Details</th>
+                    <th class="py-3 text-muted text-uppercase tracking-wider small fw-semibold">Branch</th>
+                    <th class="py-3 text-muted text-uppercase tracking-wider small fw-semibold">Status</th>
+                    <th class="py-3 text-muted text-uppercase tracking-wider small fw-semibold">Expiry</th>
+                    <th class="pe-4 py-3 text-end text-muted text-uppercase tracking-wider small fw-semibold">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for donation in donations %}
+                <tr class="border-bottom border-light">
+                    <td class="ps-4 py-3">
+                        <h6 class="fw-bold mb-1 text-dark">{{ donation.food_name }}</h6>
+                        <span class="text-muted small">{{ donation.quantity }}</span>
+                    </td>
+                    <td class="py-3 text-muted">
+                        <div class="d-flex align-items-center">
+                            <span class="fs-6 me-2">📍</span> {{ donation.address.street }}
+                        </div>
+                    </td>
+                    <td class="py-3">
+                        {% if donation.expiry_time <= now and donation.status != 'completed' %}
+                            <span class="badge badge-expired">Expired</span>
+                        {% elif donation.status == 'available' %}
+                            <span class="badge badge-available">Available</span>
+                        {% elif donation.status == 'accepted' %}
+                            <span class="badge badge-accepted">Accepted</span>
+                        {% elif donation.status == 'completed' %}
+                            <span class="badge badge-completed">Completed</span>
+                        {% else %}
+                            <span class="badge bg-secondary rounded-pill">{{ donation.status|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 text-muted">
+                        {{ donation.expiry_time|date:"M d, H:i" }}
+                    </td>
+                    <td class="pe-4 py-3 text-end">
+                        <div class="d-inline-flex gap-2">
+                            <a href="{% url 'edit_donation' donation.id %}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-medium">Edit</a>
+                            <a href="{% url 'delete_donation' donation.id %}" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-medium" onclick="return confirm('Are you sure you want to delete this donation?');">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <div class="d-inline-flex bg-light text-muted rounded-circle p-4 mb-3">
+                            <span class="fs-2">🍲</span>
+                        </div>
+                        <h5 class="fw-bold text-dark">No donations posted yet</h5>
+                        <p class="text-muted mb-4 opacity-75">Start reducing food waste by listing your first donation.</p>
+                        <a href="{% url 'create_donation' %}" class="btn btn-outline-primary-custom rounded-pill px-4">Create your first listing</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

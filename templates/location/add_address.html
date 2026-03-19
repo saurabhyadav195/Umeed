@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8 col-xl-7">
+        
+        <div class="mb-4">
+            <a href="{% url 'profile_settings' %}#locations" class="text-decoration-none text-muted fw-medium mb-3 d-inline-block">← Back to Settings</a>
+            {% if request.user.role == 'restaurant' %}
+                <h2 class="fw-bold mb-1">Add New Branch</h2>
+                <p class="text-muted">Register a new physical location where you can host food donations.</p>
+            {% else %}
+                <h2 class="fw-bold mb-1">Add New Base Location</h2>
+                <p class="text-muted">Register a new operational base to discover food donations nearby.</p>
+            {% endif %}
+        </div>
+
+        <div class="glass-card shadow-sm border-0 p-4 p-md-5 mb-5">
+            <form method="post" id="addressForm">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger rounded-3 py-2 text-sm border-0 mb-4">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-semibold text-uppercase tracking-wider">Street Address</label>
+                        {{ form.street }}
+                        <div class="text-danger small mt-1">{{ form.street.errors }}</div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <label class="form-label text-muted small fw-semibold text-uppercase tracking-wider">City</label>
+                        {{ form.city }}
+                        <div class="text-danger small mt-1">{{ form.city.errors }}</div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-semibold text-uppercase tracking-wider">State</label>
+                        {{ form.state }}
+                        <div class="text-danger small mt-1">{{ form.state.errors }}</div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-semibold text-uppercase tracking-wider">Pincode</label>
+                        {{ form.pincode }}
+                        <div class="text-danger small mt-1">{{ form.pincode.errors }}</div>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <label class="form-label text-muted small fw-semibold text-uppercase tracking-wider mb-2">Pinpoint on Map</label>
+                        <p class="small text-muted mb-2">Click on the map to set the exact coordinates of your location.</p>
+                        <div id="map" class="rounded-4 border" style="height: 350px; z-index: 1;"></div>
+                        
+                        <!-- Hidden inputs for lat/lng -->
+                        <div class="d-none">
+                            {{ form.latitude }}
+                            {{ form.longitude }}
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-5">
+                        <button type="submit" class="btn btn-primary-custom btn-lg w-100 rounded-pill fw-bold">
+                            Save Location
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Style inputs
+        const inputs = document.querySelectorAll('#addressForm input[type="text"], #addressForm input[type="number"]');
+        inputs.forEach(input => {
+            input.classList.add('form-control', 'form-control-custom');
+        });
+
+        // Initialize Map
+        // Check if values exist (e.g. on form error reload or edit)
+        var latInput = document.getElementById("id_latitude");
+        var lngInput = document.getElementById("id_longitude");
+        
+        var startLat = latInput.value ? parseFloat(latInput.value) : 19.0760;
+        var startLng = lngInput.value ? parseFloat(lngInput.value) : 72.8777;
+
+        var map = L.map('map').setView([startLat, startLng], 12); // Default Mumbai
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker;
+
+        // If modifying an existing address, show initial marker
+        if(latInput.value && lngInput.value) {
+            marker = L.marker([startLat, startLng]).addTo(map);
+        }
+
+        map.on('click', function(e) {
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker(e.latlng).addTo(map);
+            latInput.value = e.latlng.lat;
+            lngInput.value = e.latlng.lng;
+        });
+    });
+</script>
+{% endblock %}

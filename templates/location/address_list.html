@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if request.user.role == 'restaurant' %}
+    <h2>Your Branch Locations</h2>
+{% else %}
+    <h2>Your NGO Base Locations</h2>
+{% endif %}
+
+<a href="{% url 'add_address' %}" class="btn btn-success mb-3">
+    {% if request.user.role == 'restaurant' %}
+        Add New Branch
+    {% else %}
+        Add New Base Location
+    {% endif %}
+</a>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Street</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Pincode</th>
+    </tr>
+
+    {% for address in addresses %}
+    <tr>
+        <td>{{ address.street }}</td>
+        <td>{{ address.city }}</td>
+        <td>{{ address.state }}</td>
+        <td>{{ address.pincode }}</td>
+        <td>
+            <a href="{% url 'edit_address' address.id %}" class="btn btn-sm btn-warning">Edit</a>
+            <a href="{% url 'delete_address' address.id %}"
+                class="btn btn-sm btn-danger"
+                onclick="return confirm('Are you sure you want to delete this branch?');">
+                Delete
+            </a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="4">No branches added yet.</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

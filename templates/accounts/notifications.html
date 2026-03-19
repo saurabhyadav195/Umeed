@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-8">
+        <div class="mb-4 d-flex align-items-center justify-content-between">
+            <div>
+                <h2 class="fw-bold mb-1">Notifications</h2>
+                <p class="text-muted mb-0">Stay updated on your food donation activity.</p>
+            </div>
+            <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-none d-sm-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                <span class="fs-3">🔔</span>
+            </div>
+        </div>
+
+        <div class="glass-card p-0 overflow-hidden border-0 shadow-sm">
+            <div class="list-group list-group-flush">
+            {% for note in notifications %}
+                <div class="list-group-item p-4 border-light hover-bg-light transition-all">
+                    <div class="d-flex w-100 justify-content-between align-items-start">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="mt-1 text-primary">
+                                <!-- Could use conditional icons based on note type if available -->
+                                <span class="fs-5">📌</span>
+                            </div>
+                            <div>
+                                <p class="mb-1 text-dark fw-medium" style="line-height: 1.5;">{{ note.message }}</p>
+                            </div>
+                        </div>
+                        <small class="text-muted text-nowrap ms-3 bg-light px-2 py-1 rounded">
+                            {{ note.created_at|timesince }} ago
+                        </small>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center py-5 px-3">
+                    <span class="fs-1 d-block mb-3 opacity-50">✨</span>
+                    <h5 class="fw-bold text-dark">You're all caught up!</h5>
+                    <p class="text-muted mb-0">You have no notifications at this time.</p>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-bg-light:hover {
+    background-color: rgba(248, 250, 252, 0.8) !important;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <a href="{% url 'restaurant_dashboard' %}" class="text-decoration-none text-muted fw-medium mb-2 d-inline-block">← Back to Dashboard</a>
+        <h2 class="fw-bold mb-1">Incoming Donation Requests</h2>
+        <p class="text-muted mb-0">Manage and coordinate pickups with NGOs requesting your food.</p>
+    </div>
+</div>
+
+<div class="glass-card border-0 p-0 overflow-hidden shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-borderless table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4 py-3 text-muted text-uppercase tracking-wider small fw-semibold">Food Item</th>
+                    <th class="py-3 text-muted text-uppercase tracking-wider small fw-semibold">Requesting NGO</th>
+                    <th class="py-3 text-muted text-uppercase tracking-wider small fw-semibold">Status</th>
+                    <th class="py-3 text-muted text-uppercase tracking-wider small fw-semibold text-center">Approve/Reject</th>
+                    <th class="pe-4 py-3 text-end text-muted text-uppercase tracking-wider small fw-semibold">Coordination</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requests %}
+                <tr class="border-bottom border-light">
+                    <td class="ps-4 py-3">
+                        <h6 class="fw-bold mb-1 text-dark">{{ req.donation.food_name }}</h6>
+                    </td>
+                    <td class="py-3">
+                        <span class="text-muted fw-medium"><span class="fs-6 me-1">🤝</span> {{ req.ngo.organization_name }}</span>
+                    </td>
+                    <td class="py-3">
+                        {% if req.status == "requested" %}
+                            <span class="badge badge-requested">Requested</span>
+                        {% elif req.status == "accepted" %}
+                            <span class="badge badge-accepted">Accepted</span>
+                        {% elif req.status == "rejected" %}
+                            <span class="badge badge-expired">Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 text-center">
+                        {% if req.status == "requested" %}
+                            <div class="d-inline-flex gap-2 justify-content-center">
+                                <a href="{% url 'accept_request' req.id %}" 
+                                class="btn btn-sm btn-success rounded-pill px-3 shadow-sm fw-medium"
+                                onclick="return confirm('Accept this request?');">
+                                Accept
+                                </a>
+
+                                <a href="{% url 'reject_request' req.id %}" 
+                                class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-medium"
+                                onclick="return confirm('Reject this request?');">
+                                Reject
+                                </a>
+                            </div>
+                        {% else %}
+                            <span class="text-muted small">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="pe-4 py-3 text-end">
+                        <div class="d-flex flex-column align-items-end gap-2">
+                            <a href="{% url 'donation_query' req.donation.id %}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                                💬 Queries
+                            </a>
+                            {% if req.status == "accepted" and req.donation.status != "completed" %}
+                                <a href="{% url 'complete_donation' req.donation.id %}"
+                                class="btn btn-sm btn-dark rounded-pill px-3 fw-medium mt-1"
+                                onclick="return confirm('Mark this donation as completed? Only do this after the food is picked up.');">
+                                ✓ Complete Pickup
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <div class="d-inline-flex bg-light text-muted rounded-circle p-4 mb-3">
+                            <span class="fs-2">📫</span>
+                        </div>
+                        <h5 class="fw-bold text-dark">No requests yet</h5>
+                        <p class="text-muted mb-0 opacity-75">You don't have any incoming requests for your donations right now.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

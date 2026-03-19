@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row mb-4 align-items-end">
+    <div class="col-md-7">
+        <h2 class="fw-bold mb-1">Nearby Donations</h2>
+        <p class="text-muted mb-0">Discover and claim surplus food available in your area.</p>
+    </div>
+    <div class="col-md-5 mt-3 mt-md-0 d-flex justify-content-md-end">
+        <div class="bg-white p-2 rounded-pill shadow-sm d-inline-flex gap-2 w-100">
+            <form method="get" class="d-flex w-100 m-0">
+                <select name="base" class="form-select border-0 bg-transparent fw-medium shadow-none w-auto" onchange="this.form.submit()" style="min-width: 150px;">
+                    <option value="">-- Base Location --</option>
+                    {% for base in bases %}
+                        <option value="{{ base.id }}" {% if selected_base == base.id|stringformat:"s" %}selected{% endif %}>
+                            {{ base.street }} ({{ base.city }})
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="vr mx-1 my-2"></div>
+                <div class="d-flex align-items-center">
+                    <input type="number" name="radius" class="form-control border-0 bg-transparent fw-medium shadow-none w-auto" value="{{ radius }}" min="1" placeholder="Distance" onchange="this.form.submit()" style="max-width: 70px;">
+                    <span class="text-muted fw-medium me-2">KM</span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if selected_base %}
+    {% if nearby_donations %}
+    <div class="row g-4">
+        {% for item in nearby_donations %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative hover-shadow transition-all">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge badge-available">Available</span>
+                        <div class="d-flex align-items-center text-muted small fw-medium bg-light px-2 py-1 rounded-pill">
+                            <span class="fs-6 me-1">📍</span> {{ item.distance }} km
+                        </div>
+                    </div>
+                    
+                    <h5 class="fw-bold mb-1">{{ item.donation.food_name }}</h5>
+                    <p class="text-muted small mb-3"><span class="fs-6 me-1">🏪</span> {{ item.donation.restaurant.organization_name }}</p>
+                    
+                    <div class="bg-light p-3 rounded-3 mb-4">
+                        <div class="row g-2 text-center text-md-start">
+                            <div class="col-6 border-end">
+                                <span class="d-block text-muted small text-uppercase tracking-wider" style="font-size: 0.7rem;">Quantity</span>
+                                <span class="fw-semibold">{{ item.donation.quantity }}</span>
+                            </div>
+                            <div class="col-6 ps-md-3">
+                                <span class="d-block text-muted small text-uppercase tracking-wider" style="font-size: 0.7rem;">Expires</span>
+                                <span class="fw-semibold text-danger">{{ item.donation.expiry_time|time:"H:i" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if item.donation.description %}
+                        <p class="small text-muted mb-4 line-clamp-2">{{ item.donation.description }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="card-footer bg-white border-0 p-4 pt-0 mt-auto">
+                    <a href="{% url 'request_donation' item.donation.id %}" class="btn btn-primary-custom w-100 rounded-pill fw-bold">
+                        Request Donation
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="glass-card text-center py-5 border-0 shadow-sm col-md-8 mx-auto mt-4">
+        <span class="fs-1 d-block mb-3">🔍</span>
+        <h4 class="fw-bold text-dark">No donations found</h4>
+        <p class="text-muted mb-4">There are currently no available food donations within {{ radius }} km of the selected base.</p>
+    </div>
+    {% endif %}
+{% else %}
+<div class="glass-card text-center py-5 border-0 shadow-sm col-md-8 mx-auto mt-4">
+    <div class="d-inline-flex bg-primary bg-opacity-10 text-primary rounded-circle p-4 mb-4">
+        <span class="fs-1">📍</span>
+    </div>
+    <h4 class="fw-bold text-dark mb-2">Select a Base Location</h4>
+    <p class="text-muted mb-0">Please select one of your operational bases from the dropdown above to view nearby donations.</p>
+</div>
+{% endif %}
+
+<style>
+.hover-shadow:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-4px);
+}
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+</style>
+{% endblock %}

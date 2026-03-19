@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <a href="{% url 'ngo_dashboard' %}" class="text-decoration-none text-muted fw-medium mb-2 d-inline-block">← Back to Dashboard</a>
+        <h2 class="fw-bold mb-1">My Donation Requests</h2>
+        <p class="text-muted mb-0">Track the status of the food you have requested to claim.</p>
+    </div>
+</div>
+
+<div class="glass-card border-0 p-0 overflow-hidden shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-borderless table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4 py-3 text-muted text-uppercase tracking-wider small fw-semibold">Food & Donor</th>
+                    <th class="py-3 text-muted text-uppercase tracking-wider small fw-semibold">Status</th>
+                    <th class="py-3 text-muted text-uppercase tracking-wider small fw-semibold">Queries</th>
+                    <th class="pe-4 py-3 text-end text-muted text-uppercase tracking-wider small fw-semibold">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in requests %}
+                <tr class="border-bottom border-light">
+                    <td class="ps-4 py-3">
+                        <h6 class="fw-bold mb-1 text-dark">{{ req.donation.food_name }}</h6>
+                        <span class="text-muted small"><span class="fs-6 me-1">🏪</span> {{ req.donation.restaurant.organization_name }}</span>
+                    </td>
+                    <td class="py-3">
+                        {% if req.status == 'requested' %}
+                            <span class="badge badge-requested">Requested</span>
+                        {% elif req.status == 'accepted' %}
+                            <span class="badge badge-accepted">Accepted</span>
+                        {% elif req.status == 'rejected' %}
+                            <span class="badge badge-expired">Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3">
+                        {% if req.status == "accepted" %}
+                            <a href="{% url 'donation_query' req.donation.id %}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                                💬 View Queries
+                            </a>
+                        {% else %}
+                            <span class="text-muted small">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="pe-4 py-3 text-end">
+                        {% if req.status == "accepted" and req.donation.status != "completed" %}
+                            <a href="{% url 'complete_donation' req.donation.id %}"
+                            class="btn btn-sm btn-success rounded-pill px-3 fw-medium shadow-sm"
+                            onclick="return confirm('Confirm pickup completed?');">
+                            ✓ Mark Completed
+                            </a>
+                        {% else %}
+                            <span class="text-muted small">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-5">
+                        <div class="d-inline-flex bg-light text-muted rounded-circle p-4 mb-3">
+                            <span class="fs-2">📦</span>
+                        </div>
+                        <h5 class="fw-bold text-dark">No requests yet</h5>
+                        <p class="text-muted mb-4 opacity-75">You have not requested any donations yet. Go find available food nearby.</p>
+                        <a href="{% url 'ngo_nearby' %}" class="btn btn-primary-custom rounded-pill px-4">Find Food</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
