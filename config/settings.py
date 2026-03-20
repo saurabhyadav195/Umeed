@@ -19,6 +19,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-j=@5sym*k^_(!#u==3^@t
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 CSRF_TRUSTED_ORIGINS = ['https://*.trycloudflare.com', 'https://*.render.com']
 
