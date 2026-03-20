@@ -23,6 +23,9 @@ from accounts.views import HomeView, AboutView, PrivacyPolicyView, TermsOfServic
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', HomeView.as_view(), name='home'),
+    path('about/', AboutView.as_view(), name='about'),
+    path('privacy-policy/', PrivacyPolicyView.as_view(), name='privacy_policy'),
+    path('terms-of-service/', TermsOfServiceView.as_view(), name='terms_of_service'),
     path('accounts/', include('accounts.urls')),
     path('location/', include('location.urls')),
     path('donations/', include('donations.urls')),

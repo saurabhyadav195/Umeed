@@ -1,4 +1,6 @@
 import random
+import os
+from django.shortcuts import render, redirect
 from django.views.generic import FormView, CreateView, ListView, TemplateView
 from django import forms
 from django.utils import timezone
@@ -6,7 +8,7 @@ from datetime import timedelta
 from django.urls import reverse_lazy
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
-from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from .forms import SignupForm, DocumentUploadForm
 from .models import EmailOTP, VerificationDocument, Notification
 from django.contrib.auth.views import LoginView
@@ -21,8 +23,6 @@ from location.models import Address
 
 User = get_user_model()
 
-class HomeView(TemplateView):
-    template_name = 'home.html'
 
 class AboutView(TemplateView):
     template_name = 'about.html'
