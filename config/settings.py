@@ -134,6 +134,8 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'umeeddonation@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'mbilnakyqbtwvuzp')
 
 AUTH_USER_MODEL = 'accounts.User'
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
