@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'location',
     'donations',
     'dashboard',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -133,11 +134,8 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'umeeddonation@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'mbilnakyqbtwvuzp')
 
 AUTH_USER_MODEL = 'accounts.User'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
@@ -149,4 +147,15 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Firebase service account key path
 FIREBASE_SERVICE_ACCOUNT_PATH = BASE_DIR / 'firebase-service-account.json'
 # Path for environment variable based JSON if needed
-FIREBASE_SERVICE_ACCOUNT_JSON = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON')
+FIREBASE_SERVICE_ACCOUNT_JSON = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON')
+
+# Media Storage Configuration for Render (using Firebase Cloud Storage)
+if not DEBUG or os.environ.get('USE_FIREBASE_STORAGE', 'False') == 'True':
+    DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+    GS_BUCKET_NAME = os.environ.get('FIREBASE_STORAGE_BUCKET')
+    GS_DEFAULT_ACL = 'publicRead'
+    # Use the service account file for credentials
+    GS_CREDENTIALS = FIREBASE_SERVICE_ACCOUNT_PATH
+else:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
